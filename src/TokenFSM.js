@@ -48,7 +48,7 @@ export default class TokenFSM extends EventEmitter {
     this._setState(TOKEN_FSM_ERROR, error);
   }
   getToken() {
-    if (this.stateName !== TOKEN_FSM_TOKEN) {
+    if (this.isNotAuthenticated()) {
       return null;
     }
     return this.stateData;
@@ -75,5 +75,8 @@ export default class TokenFSM extends EventEmitter {
   }
   isAuthenticated() {
     return this.stateName === TOKEN_FSM_TOKEN;
+  }
+  isNotAuthenticated() {
+    return !this.isAuthenticated();
   }
 }

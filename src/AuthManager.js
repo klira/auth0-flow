@@ -64,7 +64,7 @@ export default class AuthManager {
     await this.tokenFSM.waitForNonInitialState();
     if (this.tokenFSM.isAuthenticated()) {
       return false;
-    } else if (this.tokenFSM.isError() || this.tokenFSM.isUnauthenticated()) {
+    } else if (this.tokenFSM.isNotAuthenticated()) {
       this.platform.redirect(this.auth0.buildAuthorizeUrl());
       return true;
     } else {

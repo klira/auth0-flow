@@ -25,6 +25,7 @@ test("Setting token works", () => {
   tfsm.onToken(SOME_TOKEN);
   expect(tfsm.getToken()).toBe(SOME_TOKEN);
   expect(tfsm.isAuthenticated()).toBe(true);
+  expect(tfsm.isNotAuthenticated()).toBe(false);
 });
 
 test("Going from error to token works", () => {
@@ -33,6 +34,7 @@ test("Going from error to token works", () => {
   tfsm.onToken(SOME_TOKEN);
   expect(tfsm.getToken()).toBe(SOME_TOKEN);
   expect(tfsm.isAuthenticated()).toBe(true);
+  expect(tfsm.isNotAuthenticated()).toBe(false);
 });
 
 test("Going from token to token updates the token", () => {
@@ -50,6 +52,7 @@ test("Setting error works", () => {
   const tfsm = new TokenFSM();
   tfsm.onError(SOME_ERROR);
   expect(tfsm.isError()).toBe(true);
+  expect(tfsm.isNotAuthenticated()).toBe(true);
 });
 
 test("token is not kept after subsequent errors", () => {
@@ -58,6 +61,7 @@ test("token is not kept after subsequent errors", () => {
   tfsm.onError(SOME_ERROR);
   expect(tfsm.getToken()).toBe(null);
   expect(tfsm.isError()).toBe(true);
+  expect(tfsm.isNotAuthenticated()).toBe(true);
 });
 
 //
@@ -69,6 +73,7 @@ test("No auth is not accepted in error", () => {
   tfsm.onNoAuthFound();
   expect(tfsm.isError()).toBe(true);
   expect(tfsm.isUnauthenticated()).toBe(false);
+  expect(tfsm.isNotAuthenticated()).toBe(true);
 });
 
 test("No auth is not accepted in token", () => {
@@ -77,12 +82,14 @@ test("No auth is not accepted in token", () => {
   tfsm.onNoAuthFound();
   expect(tfsm.isAuthenticated()).toBe(true);
   expect(tfsm.isUnauthenticated()).toBe(false);
+  expect(tfsm.isNotAuthenticated()).toBe(false);
 });
 
 test("No auth is accepted in initial", () => {
   const tfsm = new TokenFSM();
   tfsm.onNoAuthFound();
   expect(tfsm.isUnauthenticated()).toBe(true);
+  expect(tfsm.isNotAuthenticated()).toBe(true);
 });
 
 // waiting
