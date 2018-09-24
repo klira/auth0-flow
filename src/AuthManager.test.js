@@ -116,3 +116,12 @@ test("getToken returns token if nonError", async () => {
   const am = new AuthManager(tokenFSM, new Auth0Wrap(), new WebPlatform());
   expect(await am.getToken()).toBe(TOKEN);
 });
+
+test("authorizeIfNotLoggedIn does nothing when authenticated", async () => {
+  const tokenFSM = new TokenFSM();
+  tokenFSM.isAuthenticated.mockReturnValue(true);
+  const platform = new WebPlatform();
+  const am = new AuthManager(tokenFSM, new Auth0Wrap(), platform);
+  expect(await am.authorizeIfNotLoggedIn()).toBe(false);
+  expect(platform.redirect).not.toHaveBeenCalled();
+});
