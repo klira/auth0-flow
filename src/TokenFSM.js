@@ -54,7 +54,7 @@ export default class TokenFSM extends EventEmitter {
     return this.stateData;
   }
   onceF(name) {
-    return Promise(resolve => {
+    return new Promise(resolve => {
       this.once(name, x => resolve(x));
     });
   }
