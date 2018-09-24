@@ -44,24 +44,21 @@ export default class AuthManager {
   }
 
   getToken() {
-    this.tokenFSM
-      .then()
-      .waitForNonInitialState(_ => this.tokenFSM.getToken())
-      .then(val => {
-        if (!val) {
-          if (this.tokenFSM.isError()) {
-            return Promise.reject(new Error("Authentication failed"));
-          } else if (this.tokenFSM.isUnauthenticated()) {
-            return Promise.reject(new Error("The user is not authenticated"));
-          } else {
-            return Promise.reject(
-              new Error("Unknown FSM state, this should not happen")
-            );
-          }
+    return this.tokenFSM.getTokenWhenNonInitial().then(val => {
+      if (!val) {
+        if (this.tokenFSM.isError()) {
+          return Promise.reject(new Error("Authentication failed"));
+        } else if (this.tokenFSM.isUnauthenticated()) {
+          return Promise.reject(new Error("The user is not authenticated"));
         } else {
-          return val;
+          return Promise.reject(
+            new Error("Unknown FSM state, this should not happen")
+          );
         }
-      });
+      } else {
+        return val;
+      }
+    });
   }
   async authorizeIfNotLoggedIn() {
     await this.tokenFSM.waitForNonInitialState();
