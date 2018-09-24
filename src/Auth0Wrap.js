@@ -1,6 +1,6 @@
 const DEFAULT_OPTIONS = {
-  domain: Process.env["AUTH0_DOMAIN"] || null,
-  clientID: Process.env["AUTH0_CLIENT_ID"] || null,
+  domain: process.env["AUTH0_DOMAIN"] || null,
+  clientID: process.env["AUTH0_CLIENT_ID"] || null,
   domain: "zensum.eu.auth0.com",
   redirectUri: `${window.location.origin}/`,
   audience: "https://zensum.eu.auth0.com/userinfo",
@@ -37,5 +37,8 @@ export default class Auth0Wrap {
   }
   buildAuthorizeUrl(options) {
     return this.auth0.buildAuthorizeUrl(options);
+  }
+  buildLogoutUrl(options) {
+    return this.auth0.buildLogoutUrl(options);
   }
 }
