@@ -7,7 +7,7 @@ const TOKEN_FSM_ERROR = "error";
 
 export default class TokenFSM extends EventEmitter {
   constructor() {
-    super();
+    super({ emitDelay: 1 });
     this._setState(TOKEN_FSM_INITIAL);
   }
   _sendEvent(oldState, newState, oldData, newData) {
