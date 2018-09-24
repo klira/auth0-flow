@@ -1,4 +1,4 @@
-import { local } from "store";
+import { local } from "store2";
 
 const STORAGE_KEY = "io.klira.auth0-flow/tokens";
 
