@@ -116,6 +116,24 @@ test("Waiting for nonInitialState after token", async () => {
 });
 
 //
+// Get Token after nonInitial
+//
+test("GetTokenWhenNonInitial delegates as appropriate", async () => {
+  const tfsm = new TokenFSM();
+  const TOKEN = { a: "token" };
+  tfsm.waitForNonInitialState = jest.fn();
+  tfsm.waitForNonInitialState.mockReturnValue(Promise.resolve());
+  tfsm.getToken = jest.fn();
+  tfsm.getToken.mockReturnValue(TOKEN);
+
+  const returnedToken = await tfsm.getTokenWhenNonInitial();
+  expect(returnedToken).toBe(TOKEN);
+  expect(tfsm.waitForNonInitialState).toBeCalledWith();
+  expect(tfsm.getToken).toBeCalledWith();
+  tfsm.getToken;
+});
+
+//
 // Emit
 //
 

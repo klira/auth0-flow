@@ -53,6 +53,9 @@ export default class TokenFSM extends EventEmitter {
     }
     return this.stateData;
   }
+  getTokenWhenNonInitial() {
+    return this.waitForNonInitialState().then(() => this.getToken());
+  }
   onceF(name) {
     return new Promise(resolve => {
       this.once(name, x => resolve(x));
