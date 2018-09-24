@@ -64,11 +64,9 @@ export default class AuthManager {
     await this.tokenFSM.waitForNonInitialState();
     if (this.tokenFSM.isAuthenticated()) {
       return false;
-    } else if (this.tokenFSM.isNotAuthenticated()) {
+    } else {
       this.platform.redirect(this.auth0.buildAuthorizeUrl());
       return true;
-    } else {
-      throw new Error("Unknown FSM state, this should not happen");
     }
   }
   logout() {
