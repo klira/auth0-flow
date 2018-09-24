@@ -125,3 +125,16 @@ test("authorizeIfNotLoggedIn does nothing when authenticated", async () => {
   expect(await am.authorizeIfNotLoggedIn()).toBe(false);
   expect(platform.redirect).not.toHaveBeenCalled();
 });
+
+test("authorizeWhenNotLogged in authorizes when authenticated", async () => {
+  const tokenFSM = new TokenFSM();
+  tokenFSM.isAuthenticated.mockReturnValue(false);
+  const auth = new Auth0Wrap();
+  const platform = new WebPlatform();
+  const URL = "a mocked authorize url";
+  auth.buildAuthorizeUrl.mockReturnValue(URL);
+  const am = new AuthManager(tokenFSM, auth, platform);
+  expect(await am.authorizeIfNotLoggedIn()).toBe(true);
+  expect(platform.redirect).toHaveBeenCalledWith(URL);
+  expect(auth.buildAuthorizeUrl).toHaveBeenCalled();
+});
