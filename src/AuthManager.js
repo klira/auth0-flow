@@ -1,19 +1,16 @@
-import auth0 from "auth0-js";
-import TokenFSM from "./src/TokenFSM.js";
-import Auth0Wrap from "./src/Auth0Wrap.js";
-
 const authTokensRE = /id_token|access_token|code/;
 
 export default class AuthManager {
-  constructor(options, platform) {
-    this.tokenFSM = new TokenFSM();
-    this.auth0 = Auth0Wrap(options);
+  constructor(tokenFSM, auth0, platform) {
+    this.tokenFSM = tokenFSM;
+    this.auth0 = auth0;
     this.platform = platform;
-    platform.boot(this);
   }
 
+  //tokenPromiseToFSM() {}
+
   onBoot(hash, storedTokens) {
-    if (authTokensRE.match(hash)) {
+    if (hash && hash.match(authTokensRE)) {
       return this.onLocationHashChange(hash);
     } else if (storedTokens !== null) {
       return this.onPossiblyStaleToken(storedTokens);
@@ -24,7 +21,7 @@ export default class AuthManager {
   }
 
   onLocationHashChange(hash) {
-    const containsAuth = authTokensRE.match(hash);
+    const containsAuth = hash.match(authTokensRE);
     if (!containsAuth) {
       return Promise.resolve(null);
     }
