@@ -45,7 +45,6 @@ export default class TokenFSM extends EventEmitter {
     this._setState(TOKEN_FSM_TOKEN, tokens);
   }
   onError(error) {
-    console.error();
     this._setState(TOKEN_FSM_ERROR, error);
   }
   getToken() {
