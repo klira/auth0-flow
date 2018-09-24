@@ -36,7 +36,7 @@ export default class AuthManager {
 
   onPossiblyStaleToken(tokens) {
     return this.auth0
-      .refreshToken(tokens)
+      .renewAuth({})
       .then(
         res => this.tokenFSM.onToken(res),
         err => this.tokenFSM.onError(err)
