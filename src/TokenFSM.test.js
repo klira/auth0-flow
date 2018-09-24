@@ -87,9 +87,75 @@ test("No auth is accepted in initial", () => {
 
 // waiting
 
-test("Waiting for nonInitialState works", async () => {
+test("Waiting for nonInitialState on token", async () => {
   const tfsm = new TokenFSM();
   const p = tfsm.waitForNonInitialState();
   tfsm.onToken(SOME_TOKEN);
   expect(await p).toBe(true);
+});
+
+test("Waiting for nonInitialState on error", async () => {
+  const tfsm = new TokenFSM();
+  const p = tfsm.waitForNonInitialState();
+  tfsm.onError(SOME_ERROR);
+  expect(await p).toBe(true);
+});
+
+test("Waiting for nonInitialState on no-auth", async () => {
+  const tfsm = new TokenFSM();
+  const p = tfsm.waitForNonInitialState();
+  tfsm.onNoAuthFound();
+  expect(await p).toBe(true);
+});
+
+test("Waiting for nonInitialState after token", async () => {
+  const tfsm = new TokenFSM();
+  tfsm.onToken(SOME_TOKEN);
+  const p = tfsm.waitForNonInitialState();
+  expect(await p).toBe(true);
+});
+
+//
+// Emit
+//
+
+test("Initial fails emits failOnBoot, fail, nonInitial", async () => {
+  const tfsm = new TokenFSM();
+  const p = tfsm.onceF("failOnBoot");
+  const p2 = tfsm.onceF("fail");
+  const p3 = tfsm.onceF("nonInitial");
+  tfsm.onError(SOME_ERROR);
+  expect(await p).toBe(SOME_ERROR);
+  expect(await p2).toBe(SOME_ERROR);
+  expect(await p3).toBe(undefined);
+});
+
+test("Subsequent fails emits failAfterLoad, fail, nonInitial", async () => {
+  const tfsm = new TokenFSM();
+  tfsm.onToken(SOME_TOKEN);
+  const p = tfsm.onceF("failAfterLoad");
+  const p2 = tfsm.onceF("fail");
+  const p3 = tfsm.onceF("nonInitial");
+  tfsm.onError(SOME_ERROR);
+  expect(await p).toBe(SOME_ERROR);
+  expect(await p2).toBe(SOME_ERROR);
+  expect(await p3).toBe(undefined);
+});
+
+test("Token emits authenticated,nonInitial", async () => {
+  const tfsm = new TokenFSM();
+  const p = tfsm.onceF("authenticated");
+  const p2 = tfsm.onceF("nonInitial");
+  tfsm.onToken(SOME_TOKEN);
+  expect(await p).toBe(SOME_TOKEN);
+  expect(await p2).toBe(undefined);
+});
+
+test("noAuth emits no noAuth,nonInitial", async () => {
+  const tfsm = new TokenFSM();
+  const p = tfsm.onceF("noAuth");
+  const p2 = tfsm.onceF("nonInitial");
+  tfsm.onNoAuthFound();
+  expect(await p).toBe(undefined);
+  expect(await p2).toBe(undefined);
 });
