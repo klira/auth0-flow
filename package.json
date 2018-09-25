@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "auth0-js": "^9.7.3",
-    "event-emitter-es6": "^1.1.5",
+    "event-emitter-es6": "^1.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.1.0",
