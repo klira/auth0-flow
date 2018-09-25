@@ -15,7 +15,4 @@ export default class WebPlatform {
   clearState() {
     local.remove(STORAGE_KEY);
   }
-  redirect(destination) {
-    window.location.href = destination;
-  }
 }

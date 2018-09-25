@@ -26,7 +26,7 @@ export default class AuthManager {
       return Promise.resolve(null);
     }
     return this.auth0
-      .parseHash(hash)
+      .parseHash({ hash: hash })
       .then(
         res => this.tokenFSM.onToken(res),
         err => this.tokenFSM.onError(err)
@@ -65,11 +65,11 @@ export default class AuthManager {
     if (this.tokenFSM.isAuthenticated()) {
       return false;
     } else {
-      this.platform.redirect(this.auth0.buildAuthorizeUrl());
+      this.auth0.authorize();
       return true;
     }
   }
   logout() {
-    this.platform.redirect(this.auth0.buildLogoutUrl());
+    this.auth0.logout();
   }
 }

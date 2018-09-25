@@ -35,10 +35,10 @@ export default class Auth0Wrap {
   renewAuth(options) {
     return prom(cb => this.auth0.renewAuth(options, cb));
   }
-  buildAuthorizeUrl(options) {
-    return this.auth0.buildAuthorizeUrl(options);
+  authorize(options) {
+    return this.auth0.authorize(options);
   }
-  buildLogoutUrl(options) {
-    return this.auth0.buildLogoutUrl(options);
+  logout(options) {
+    return this.auth0.logout(options);
   }
 }

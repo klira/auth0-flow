@@ -15,11 +15,9 @@ beforeEach(() => {
 test("Logout calls auth0 and then platform for a URL", () => {
   const platform = new WebPlatform();
   const auth = new Auth0Wrap();
-  const logoutUrl = {};
-  auth.buildLogoutUrl.mockReturnValue(logoutUrl);
   const am = new AuthManager(new TokenFSM(), auth, platform);
   am.logout();
-  expect(platform.redirect).toHaveBeenCalledWith(logoutUrl);
+  expect(auth.logout).toHaveBeenCalled();
 });
 
 test("Calls noAuth when booting without state or hash", () => {
@@ -44,7 +42,7 @@ test("Attempts to parse hash and store the result w/ related hash", async () => 
   auth0.parseHash.mockReturnValue(Promise.resolve(SOME_TOK));
   const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
   await am.onBoot(EXAMPLE_HASH, null);
-  expect(auth0.parseHash).toHaveBeenCalledWith(EXAMPLE_HASH);
+  expect(auth0.parseHash).toHaveBeenCalledWith({ hash: EXAMPLE_HASH });
   expect(tokenFSM.onToken).toHaveBeenCalledWith(SOME_TOK);
 });
 
@@ -56,7 +54,7 @@ test("When parsing the hash fails yield error", async () => {
   auth0.parseHash.mockReturnValue(Promise.reject(SOME_ERR));
   const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
   await am.onBoot(EXAMPLE_HASH, null);
-  expect(auth0.parseHash).toHaveBeenCalledWith(EXAMPLE_HASH);
+  expect(auth0.parseHash).toHaveBeenCalledWith({ hash: EXAMPLE_HASH });
   expect(tokenFSM.onError).toHaveBeenCalledWith(SOME_ERR);
 });
 
@@ -69,7 +67,7 @@ test("Hash has preceedence over toks", async () => {
   auth0.parseHash.mockReturnValue(Promise.resolve(PARSED_HASH));
   const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
   await am.onBoot(EXAMPLE_HASH, EXAMPLE_TOKENS);
-  expect(auth0.parseHash).toHaveBeenCalledWith(EXAMPLE_HASH);
+  expect(auth0.parseHash).toHaveBeenCalledWith({ hash: EXAMPLE_HASH });
   expect(tokenFSM.onToken).toHaveBeenCalledWith(PARSED_HASH);
 });
 
@@ -123,18 +121,14 @@ test("authorizeIfNotLoggedIn does nothing when authenticated", async () => {
   const platform = new WebPlatform();
   const am = new AuthManager(tokenFSM, new Auth0Wrap(), platform);
   expect(await am.authorizeIfNotLoggedIn()).toBe(false);
-  expect(platform.redirect).not.toHaveBeenCalled();
 });
 
-test("authorizeWhenNotLogged in authorizes when authenticated", async () => {
+test("authorizeWhenNotLogged in authorizes when unauthenticated", async () => {
   const tokenFSM = new TokenFSM();
   tokenFSM.isAuthenticated.mockReturnValue(false);
   const auth = new Auth0Wrap();
   const platform = new WebPlatform();
-  const URL = "a mocked authorize url";
-  auth.buildAuthorizeUrl.mockReturnValue(URL);
   const am = new AuthManager(tokenFSM, auth, platform);
   expect(await am.authorizeIfNotLoggedIn()).toBe(true);
-  expect(platform.redirect).toHaveBeenCalledWith(URL);
-  expect(auth.buildAuthorizeUrl).toHaveBeenCalled();
+  expect(auth.authorize).toHaveBeenCalled();
 });
