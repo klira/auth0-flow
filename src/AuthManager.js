@@ -10,35 +10,25 @@ export default class AuthManager {
   //tokenPromiseToFSM() {}
 
   onBoot(hash, storedTokens) {
-    if (hash && hash.match(authTokensRE)) {
-      return this.onLocationHashChange(hash);
-    } else if (storedTokens !== null) {
-      return this.onPossiblyStaleToken(storedTokens);
-    } else {
-      this.tokenFSM.onNoAuthFound();
-      return Promise.resolve(null);
-    }
-  }
-
-  onLocationHashChange(hash) {
-    const containsAuth = hash.match(authTokensRE);
-    if (!containsAuth) {
-      return Promise.resolve(null);
-    }
     return this.auth0
-      .parseHash({ hash: hash })
+      .parseHash({ hash })
+      .then(x => {
+        if (x == null) {
+          return this.auth0.renewAuth({});
+        } else {
+          return x;
+        }
+      })
       .then(
-        res => this.tokenFSM.onToken(res),
-        err => this.tokenFSM.onError(err)
-      );
-    // TODO: Clear hash for to avoid shoulder surfing attacks
-  }
-
-  onPossiblyStaleToken(tokens) {
-    return this.auth0
-      .renewAuth({})
-      .then(
-        res => this.tokenFSM.onToken(res),
+        res => {
+          if (!res) {
+            this.tokenFSM.onNoAuthFound();
+            return null;
+          } else {
+            this.tokenFSM.onToken(res);
+            return null;
+          }
+        },
         err => this.tokenFSM.onError(err)
       );
   }

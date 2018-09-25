@@ -27,7 +27,6 @@ const prom = work =>
 export default class Auth0Wrap {
   constructor(options) {
     this.auth0 = clientFromOpts(options);
-    this.buildAuthorizeUrl = this.auth0.buildAuthorizeUrl.bind(this.auth0);
   }
   parseHash(options) {
     return prom(cb => this.auth0.parseHash(options, cb));

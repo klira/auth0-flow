@@ -12,25 +12,31 @@ beforeEach(() => {
   TokenFSM.mockClear();
 });
 
-test("Logout calls auth0 and then platform for a URL", () => {
+test("Logout calls auth0 and then platform for a URL", async () => {
   const platform = new WebPlatform();
   const auth = new Auth0Wrap();
   const am = new AuthManager(new TokenFSM(), auth, platform);
-  am.logout();
+  await am.logout();
   expect(auth.logout).toHaveBeenCalled();
 });
 
-test("Calls noAuth when booting without state or hash", () => {
+test("Calls noAuth when booting without state or hash", async () => {
   const tokenFSM = new TokenFSM();
-  const am = new AuthManager(tokenFSM, new Auth0Wrap(), new WebPlatform());
-  am.onBoot(null, null);
+  const auth0 = new Auth0Wrap();
+  auth0.parseHash.mockReturnValue(Promise.resolve(null));
+  auth0.renewAuth.mockReturnValue(Promise.resolve(null));
+  const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
+  await am.onBoot(null, null);
   expect(tokenFSM.onNoAuthFound).toHaveBeenCalledWith();
 });
 
-test("Calls noAuth when booting without state and w/ unrelated hash", () => {
+test("Calls noAuth when booting without state and w/ unrelated hash", async () => {
   const tokenFSM = new TokenFSM();
-  const am = new AuthManager(tokenFSM, new Auth0Wrap(), new WebPlatform());
-  am.onBoot("unrelated_hash", null);
+  const auth0 = new Auth0Wrap();
+  auth0.parseHash.mockReturnValue(Promise.resolve(null));
+  auth0.renewAuth.mockReturnValue(Promise.resolve(null));
+  const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
+  await am.onBoot("unrelated_hash", null);
   expect(tokenFSM.onNoAuthFound).toHaveBeenCalledWith();
 });
 
@@ -77,6 +83,7 @@ test("Refreshes the token when loading from storage", async () => {
   const EXAMPLE_TOKENS = {};
   const SOME_TOKS = { some: "tokeninhos" };
   const FRESH_TOKS = { fresh: "toks" };
+  auth0.parseHash.mockReturnValue(Promise.resolve(null));
   auth0.renewAuth.mockReturnValue(Promise.resolve(FRESH_TOKS));
   const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
   await am.onBoot(null, SOME_TOKS);
