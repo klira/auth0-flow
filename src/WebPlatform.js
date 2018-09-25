@@ -15,4 +15,7 @@ export default class WebPlatform {
   clearState() {
     local.remove(STORAGE_KEY);
   }
+  clearHash() {
+    history.replaceState({}, document.title, ".");
+  }
 }

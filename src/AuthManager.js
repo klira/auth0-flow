@@ -15,6 +15,7 @@ export default class AuthManager {
       .then(x => {
         if (x == null) {
           return this.auth0.renewAuth({});
+          this.platform.clearHash();
         } else {
           return x;
         }
