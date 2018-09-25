@@ -5,8 +5,8 @@ import TokenFSM from "./TokenFSM.js";
 
 class Auth {
   constructor(options) {
-    this.auth0 = new Auth0Wrap({});
-    this.platform = new WebPlatform(options || {});
+    this.auth0 = new Auth0Wrap(options || {});
+    this.platform = new WebPlatform();
     this.tokenFSM = new TokenFSM();
     this.authMgr = null;
   }
@@ -35,5 +35,4 @@ class Auth {
   }
 }
 
-
-export default Auth
+export default Auth;
