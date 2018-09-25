@@ -1,7 +1,7 @@
 import WebPlatform from "./WebPlatform.js";
 import AuthManager from "./AuthManager.js";
 import Auth0Wrap from "./Auth0Wrap.js";
-import TokenFSM from "./src/TokenFSM.js";
+import TokenFSM from "./TokenFSM.js";
 
 class Auth {
   constructor() {
@@ -14,6 +14,7 @@ class Auth {
   getAuthManager() {
     if (!this.authMgr) {
       const authMgr = new AuthManager(this.tokenFSM, this.auth0, this.platform);
+      this.authMgr = authMgr;
       // Boot the platform ensuring  that authMgr is fed.
       this.platform.boot(authMgr);
     }
@@ -25,7 +26,7 @@ class Auth {
   }
 
   async whenAuthenticated(fn) {
-    const willRedirect = await this.authMgr.authorizeIfNotLoggedIn();
+    const willRedirect = await this.getAuthManager().authorizeIfNotLoggedIn();
     if (willRedirect) {
       return;
     }
