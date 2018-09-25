@@ -7,7 +7,7 @@ export default class WebPlatform {
   boot(auth) {
     const hash = window.location.hash;
     const storedValue = local.get(STORAGE_KEY);
-    this.auth.onBoot(hash, storedValue);
+    auth.onBoot(hash, storedValue);
   }
   persistState(val) {
     local.set(STORAGE_KEY, val);
