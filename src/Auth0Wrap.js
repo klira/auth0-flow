@@ -1,12 +1,9 @@
+import auth0 from "auth0-js";
 const DEFAULT_OPTIONS = {
-  domain: process.env["AUTH0_DOMAIN"] || null,
-  clientID: process.env["AUTH0_CLIENT_ID"] || null,
-  domain: "zensum.eu.auth0.com",
   redirectUri: `${window.location.origin}/`,
-  audience: "https://zensum.eu.auth0.com/userinfo",
+  scope: "openid",
   responseType: "token id_token",
-  scope: "openid"
-};
+}
 
 const clientFromOpts = opts =>
   new auth0.WebAuth(Object.assign({}, DEFAULT_OPTIONS, opts || {}));
