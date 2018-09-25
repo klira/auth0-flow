@@ -9,13 +9,28 @@ export default class AuthManager {
 
   //tokenPromiseToFSM() {}
 
-  onBoot(hash, storedTokens) {
+  onBoot(hash) {
     return this.auth0
       .parseHash({ hash })
+      .catch(e => {
+        if (e.error === "invalid_token") {
+          return Promise.resolve(null);
+        } else {
+          return Promise.reject(e);
+        }
+      })
       .then(x => {
         if (x == null) {
-          return this.auth0.renewAuth({});
           this.platform.clearHash();
+          return this.auth0.checkSession({}).catch(e => {
+            // If the error is that another login is required. We
+            // consider it a no authentication found case.
+            if (e.error === "login_required") {
+              return Promise.resolve(null);
+            } else {
+              return Promise.reject(e);
+            }
+          });
         } else {
           return x;
         }

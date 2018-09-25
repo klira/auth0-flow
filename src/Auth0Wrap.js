@@ -31,8 +31,8 @@ export default class Auth0Wrap {
   parseHash(options) {
     return prom(cb => this.auth0.parseHash(options, cb));
   }
-  renewAuth(options) {
-    return prom(cb => this.auth0.renewAuth(options, cb));
+  checkSession(options) {
+    return prom(cb => this.auth0.checkSession(options, cb));
   }
   authorize(options) {
     return this.auth0.authorize(options);

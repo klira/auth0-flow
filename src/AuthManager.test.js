@@ -20,23 +20,13 @@ test("Logout calls auth0 and then platform for a URL", async () => {
   expect(auth.logout).toHaveBeenCalled();
 });
 
-test("Calls noAuth when booting without state or hash", async () => {
+test("Calls noAuth when no hash and no existing session", async () => {
   const tokenFSM = new TokenFSM();
   const auth0 = new Auth0Wrap();
   auth0.parseHash.mockReturnValue(Promise.resolve(null));
-  auth0.renewAuth.mockReturnValue(Promise.resolve(null));
+  auth0.checkSession.mockReturnValue(Promise.resolve(null));
   const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
-  await am.onBoot(null, null);
-  expect(tokenFSM.onNoAuthFound).toHaveBeenCalledWith();
-});
-
-test("Calls noAuth when booting without state and w/ unrelated hash", async () => {
-  const tokenFSM = new TokenFSM();
-  const auth0 = new Auth0Wrap();
-  auth0.parseHash.mockReturnValue(Promise.resolve(null));
-  auth0.renewAuth.mockReturnValue(Promise.resolve(null));
-  const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
-  await am.onBoot("unrelated_hash", null);
+  await am.onBoot(null);
   expect(tokenFSM.onNoAuthFound).toHaveBeenCalledWith();
 });
 
@@ -64,30 +54,15 @@ test("When parsing the hash fails yield error", async () => {
   expect(tokenFSM.onError).toHaveBeenCalledWith(SOME_ERR);
 });
 
-test("Hash has preceedence over toks", async () => {
-  const tokenFSM = new TokenFSM();
-  const auth0 = new Auth0Wrap();
-  const EXAMPLE_HASH = "id_token=123";
-  const EXAMPLE_TOKENS = { example: "tokens" };
-  const PARSED_HASH = { parsed: "hash" };
-  auth0.parseHash.mockReturnValue(Promise.resolve(PARSED_HASH));
-  const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
-  await am.onBoot(EXAMPLE_HASH, EXAMPLE_TOKENS);
-  expect(auth0.parseHash).toHaveBeenCalledWith({ hash: EXAMPLE_HASH });
-  expect(tokenFSM.onToken).toHaveBeenCalledWith(PARSED_HASH);
-});
-
 test("Refreshes the token when loading from storage", async () => {
   const tokenFSM = new TokenFSM();
   const auth0 = new Auth0Wrap();
-  const EXAMPLE_TOKENS = {};
-  const SOME_TOKS = { some: "tokeninhos" };
   const FRESH_TOKS = { fresh: "toks" };
   auth0.parseHash.mockReturnValue(Promise.resolve(null));
-  auth0.renewAuth.mockReturnValue(Promise.resolve(FRESH_TOKS));
+  auth0.checkSession.mockReturnValue(Promise.resolve(FRESH_TOKS));
   const am = new AuthManager(tokenFSM, auth0, new WebPlatform());
-  await am.onBoot(null, SOME_TOKS);
-  expect(auth0.renewAuth).toHaveBeenCalled();
+  await am.onBoot(null);
+  expect(auth0.checkSession).toHaveBeenCalled();
   expect(tokenFSM.onToken).toHaveBeenCalledWith(FRESH_TOKS);
 });
 
