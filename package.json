@@ -1,6 +1,6 @@
 {
   "name": "@klira/auth0-flow",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Opinionated authentication flow for Auth0",
   "main": "index.js",
   "scripts": {

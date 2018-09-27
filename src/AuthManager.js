@@ -20,8 +20,8 @@ export default class AuthManager {
         }
       })
       .then(x => {
+        this.platform.clearHash();
         if (x == null) {
-          this.platform.clearHash();
           return this.auth0.checkSession({}).catch(e => {
             // If the error is that another login is required. We
             // consider it a no authentication found case.
