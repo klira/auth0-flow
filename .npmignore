@@ -1,0 +1,5 @@
+examples/
+node_modules
+.git
+yarn.lock
+*.test.js
