@@ -10,3 +10,4 @@ node_modules/
 *.tgz
 .yarn-integrity
 .env
+.npmrc
